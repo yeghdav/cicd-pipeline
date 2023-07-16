@@ -37,20 +37,19 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
-                    docker stop $(docker ps -a -q)
-                    docker rm $(docker ps -a -q)
-                '''
                 script {
                     if(env.BRANCH_NAME == 'main'){
-                        sh 'docker run -d -p 3000:3000 nodemain:v1.0'
+                        sh 'docker stop nodemain || true'
+                        sh 'docker rm nodemain || true'
+                        sh 'docker run -d --name nodemain -p 3000:3000 nodemain:v1.0'
                     }
                     else if(env.BRANCH_NAME == 'dev'){
-                        sh 'docker run -d -p 3001:3000 nodedev:v1.0'
+                        sh 'docker stop nodedev || true'
+                        sh 'docker rm nodedev || true'
+                        sh 'docker run -d --name nodedev -p 3001:3000 nodedev:v1.0'
                     }
                 }
             }
         }
     }
 }
-
